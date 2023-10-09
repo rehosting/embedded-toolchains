@@ -40,6 +40,10 @@ RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cro
 
 # rust
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
+ENV PATH="/root/.cargo/bin:${PATH}"
+# XXX: pin rust version to 1.71 until we figure out a workaround for mips linux being demoted to tier 3
+RUN rustup toolchain install 1.71 --allow-downgrade --profile minimal # Now install 1.71
+RUN rustup override set 1.71 # and switch to it
 # Cross tools
 RUN  rustup target add x86_64-unknown-linux-musl && \
      rustup target add mips-unknown-linux-musl && \
