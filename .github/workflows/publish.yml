@@ -1,0 +1,25 @@
+name: Compile Example Program
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+
+      - name: Build 
+        run: |
+          docker run --rm -v $PWD:/app -w /app gcc gcc -o example example.c
+
+      - name: Save package
+        uses: actions/upload-artifact@v3
+        with:
+          name: example_package
+          path: example
