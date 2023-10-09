@@ -3,7 +3,7 @@ name: Compile Example Program
 on:
   push:
     branches:
-      - master
+      - main 
 
 jobs:
   build:
