@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 RUN apt-get update
-RUN apt-get -y install build-essential gdb xonsh git wget libncurses-dev bc 
+RUN apt-get -y install build-essential gdb xonsh git wget libncurses-dev bc curl 
 RUN mkdir -p /opt/cross
 
 # musl-cross i686
