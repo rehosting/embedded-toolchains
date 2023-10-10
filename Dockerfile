@@ -1,6 +1,6 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as base
 RUN apt-get update
-RUN apt-get -y install build-essential gdb xonsh git wget libncurses-dev bc curl 
+RUN apt-get -y install build-essential git wget libncurses-dev bc curl
 RUN mkdir -p /opt/cross
 
 # musl-cross i686
@@ -47,6 +47,7 @@ ENV PATH="/opt/cross/aarch64-linux-musl/bin/:${PATH}"
 RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl 
 
 # rust
+FROM base as rust
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
 # XXX: pin rust version to 1.71 until we figure out a workaround for mips linux being demoted to tier 3
