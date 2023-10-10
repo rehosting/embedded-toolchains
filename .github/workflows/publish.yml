@@ -1,4 +1,4 @@
-name: Compile Example Program
+name: Publish to Github Container Registry
 
 on:
   push:
