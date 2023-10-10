@@ -4,13 +4,17 @@ RUN apt-get -y install build-essential gdb xonsh git wget libncurses-dev bc curl
 RUN mkdir -p /opt/cross
 
 # musl-cross i686
+ENV PATH="/opt/cross/i686-linux-musl-cross/bin/:${PATH}"
 RUN wget https://musl.cc/i686-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/i686-linux-musl-cross /opt/cross/i686-linux-musl
 # musl-cross x86_64
+ENV PATH="/opt/cross/x86_64-linux-musl-cross/bin/:${PATH}"
 RUN wget https://musl.cc/x86_64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/x86_64-linux-musl-cross /opt/cross/x86_64-linux-musl
 
 # musl-cross mipseb,mipsel
 # Latest mips and mipsel toolchains break on building old kernels so we use these with gcc 5.3.0
+ENV PATH="/opt/cross/mipseb-linux-musl-cross/bin/:${PATH}"
 RUN wget http://panda.re/secret/mipseb-linux-musl_gcc-5.3.0.tar.gz -O - | tar -xz -C /opt/cross
+ENV PATH="/opt/cross/mipsel-linux-musl-cross/bin/:${PATH}"
 RUN wget http://panda.re/secret/mipsel-linux-musl_gcc-5.3.0.tar.gz -O - | tar -xz -C /opt/cross
 
 # custom mips64 toolchain
@@ -23,6 +27,7 @@ RUN wget http://panda.re/secret/mipsel-linux-musl_gcc-5.3.0.tar.gz -O - | tar -x
 # MPFR_VER = 3.1.4
 # GCC_CONFIG += --enable-languages=c
 # It's a bit nutty to symlink all of these, but easier to keep track of what's needed for the future
+ENV PATH="/opt/cross/mips64eb-linux-musl-cross/bin/:${PATH}"
 RUN wget http://panda.re/secret/mips64-linux-musl-cross_gcc-6.5.0.tar.gz -O - | tar -xz -C /opt/cross &&  ln -s /opt/cross/mips64-linux-musl-cross /opt/cross/mips64eb-linux-musl && \ 
     ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-gcc /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-gcc && \
     ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ld /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ld && \
@@ -32,10 +37,13 @@ RUN wget http://panda.re/secret/mips64-linux-musl-cross_gcc-6.5.0.tar.gz -O - | 
     ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-nm /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-nm
 
 # musl-cross mips64el
+ENV PATH="/opt/cross/mips64el-linux-musl-cross/bin/:${PATH}"
 RUN wget https://musl.cc/mips64el-linux-musl-cross.tgz -O -  | tar -xz -C /opt/cross &&  ln -s /opt/cross/mips64el-linux-musl-cross /opt/cross/mips64el-linux-musl 
 # musl-cross arm
+ENV PATH="/opt/cross/arm-linux-musl-cross/bin/:${PATH}"
 RUN wget https://musl.cc/arm-linux-musleabi-cross.tgz -O - | tar -xz -C /opt/cross &&  ln -s /opt/cross/arm-linux-musleabi-cross /opt/cross/arm-linux-musleabi
 # musl-cross arm64
+ENV PATH="/opt/cross/aarch64-linux-musl-cross/bin/:${PATH}"
 RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl 
 
 # rust
