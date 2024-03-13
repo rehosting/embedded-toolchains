@@ -34,7 +34,8 @@ RUN wget http://panda.re/secret/mips64-linux-musl-cross_gcc-6.5.0.tar.gz -O - | 
     ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objdump /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objdump && \
     ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objcopy /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objcopy && \
     ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ar /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ar && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-nm /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-nm
+    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-nm /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-nm && \
+    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-strip /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-strip
 
 # musl-cross mips64el
 ENV PATH="/opt/cross/mips64el-linux-musl/bin/:${PATH}"
