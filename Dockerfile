@@ -59,6 +59,7 @@ RUN  rustup target add x86_64-unknown-linux-musl && \
      rustup target add mips-unknown-linux-musl && \
      rustup target add mipsel-unknown-linux-musl && \
      rustup target add mips64-unknown-linux-gnuabi64 && \
+     rustup target add mips64-unknown-linux-muslabi64 && \
      rustup target add arm-unknown-linux-musleabi
     
 # Now we can use a cargo/.config with something like the following (as seen in the vpn package)
