@@ -43,6 +43,9 @@ RUN wget https://musl.cc/mips64el-linux-musl-cross.tgz -O -  | tar -xz -C /opt/c
 # musl-cross arm
 ENV PATH="/opt/cross/arm-linux-musleabi/bin/:${PATH}"
 RUN wget https://musl.cc/arm-linux-musleabi-cross.tgz -O - | tar -xz -C /opt/cross &&  ln -s /opt/cross/arm-linux-musleabi-cross /opt/cross/arm-linux-musleabi
+# musl-cross armhf
+ENV PATH="/opt/cross/arm-linux-musleabihf/bin/:${PATH}"
+RUN wget https://musl.cc/arm-linux-musleabihf-cross.tgz -O - | tar -xz -C /opt/cross &&  ln -s /opt/cross/arm-linux-musleabihf-cross /opt/cross/arm-linux-musleabihf
 # musl-cross arm64
 ENV PATH="/opt/cross/aarch64-linux-musl/bin/:${PATH}"
 RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl 
@@ -61,6 +64,7 @@ RUN  rustup target add x86_64-unknown-linux-musl && \
      rustup target add mips64-unknown-linux-gnuabi64 && \
      rustup target add mips64-unknown-linux-muslabi64 && \
      rustup target add arm-unknown-linux-musleabi && \
+     rustup target add arm-unknown-linux-musleabihf && \
      rustup target add aarch64-unknown-linux-musl
     
 # Now we can use a cargo/.config with something like the following (as seen in the vpn package)
