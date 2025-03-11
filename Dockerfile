@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as base
+FROM ubuntu:22.04 AS base
 RUN apt-get update
 RUN apt-get -y install build-essential git wget libncurses-dev bc curl
 RUN mkdir -p /opt/cross
@@ -50,8 +50,28 @@ RUN wget https://musl.cc/arm-linux-musleabihf-cross.tgz -O - | tar -xz -C /opt/c
 ENV PATH="/opt/cross/aarch64-linux-musl/bin/:${PATH}"
 RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl 
 
+# musl-cross riscv32
+ENV PATH="/opt/cross/riscv32-linux-musl/bin/:${PATH}"
+RUN wget https://musl.cc/riscv32-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/riscv32-linux-musl-cross /opt/cross/riscv32-linux-musl 
+
+# musl-cross riscv64
+ENV PATH="/opt/cross/riscv64-linux-musl/bin/:${PATH}"
+RUN wget https://musl.cc/riscv64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/riscv64-linux-musl-cross /opt/cross/riscv64-linux-musl
+
+# musl-cross ppc64
+ENV PATH="/opt/cross/powerpc64-linux-musl/bin/:${PATH}"
+RUN wget https://musl.cc/powerpc64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl
+
+# musl-cross ppc64le
+ENV PATH="/opt/cross/powerpc64le-linux-musl/bin/:${PATH}"
+RUN wget https://musl.cc/powerpc64le-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpc64le-linux-musl-cross /opt/cross/powerpc64le-linux-musl
+
+# gcc loongson
+ENV PATH="/opt/cross/loongarch64-linux-gcc-cross/bin/:${PATH}"
+RUN wget https://github.com/loongson/build-tools/releases/download/2025.02.21/x86_64-cross-tools-loongarch64-binutils_2.44-gcc_14.2.0-glibc_2.41.tar.xz -O - | tar -xJ -C /tmp && mv /tmp/cross-tools/ /opt/cross/loongarch64-linux-gcc-cross && ln -s /opt/cross/loongarch-linux-gcc-cross /opt/cross/loongarch-linux-musl
+
 # rust
-FROM base as rust
+FROM base AS rust
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
 # XXX: pin rust version to 1.71 until we figure out a workaround for mips linux being demoted to tier 3
