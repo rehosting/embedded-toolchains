@@ -58,6 +58,15 @@ RUN wget https://musl.cc/riscv32-linux-musl-cross.tgz -O - | tar -xz -C /opt/cro
 ENV PATH="/opt/cross/riscv64-linux-musl/bin/:${PATH}"
 RUN wget https://musl.cc/riscv64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/riscv64-linux-musl-cross /opt/cross/riscv64-linux-musl
 
+# musl-cross ppc
+ENV PATH="/opt/cross/powerpc-linux-musl/bin/:${PATH}"
+RUN wget https://musl.cc/powerpc-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl
+
+# musl-cross ppcle
+ENV PATH="/opt/cross/powerpcle-linux-musl/bin/:${PATH}"
+RUN wget https://musl.cc/powerpcle-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl
+
+
 # musl-cross ppc64
 ENV PATH="/opt/cross/powerpc64-linux-musl/bin/:${PATH}"
 RUN wget https://musl.cc/powerpc64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl
