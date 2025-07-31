@@ -92,9 +92,9 @@ jobs:
           build-args: |
             REGISTRY=${{ secrets.REHOSTING_ARC_REGISTRY }}/proxy
           cache-from: |
-            type=registry,ref=${{secrets.REHOSTING_ARC_REGISTRY}}/rehosting/embedded-toolchains:cache,mode=max
+            type=registry,ref=${{secrets.REHOSTING_ARC_REGISTRY}}/rehosting/embedded-toolchains_rust:cache,mode=max
           cache-to: |
-            type=registry,ref=${{secrets.REHOSTING_ARC_REGISTRY}}/rehosting/embedded-toolchains:cache,mode=max
+            type=registry,ref=${{secrets.REHOSTING_ARC_REGISTRY}}/rehosting/embedded-toolchains_rust:cache,mode=max
 
       - name: Create release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
