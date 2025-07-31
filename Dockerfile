@@ -1,4 +1,5 @@
-FROM ubuntu:22.04 AS base
+ARG REGISTRY="docker.io"
+FROM ${REGISTRY}/ubuntu:22.04 AS base
 RUN apt-get update
 RUN apt-get -y install build-essential git wget libncurses-dev bc curl
 RUN mkdir -p /opt/cross
