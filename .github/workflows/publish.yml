@@ -68,6 +68,7 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:${{ steps.version.outputs.v-version }}
+          target: base
           build-args: |
             REGISTRY=${{ secrets.REHOSTING_ARC_REGISTRY }}/proxy
           cache-from: |
