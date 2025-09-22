@@ -170,12 +170,12 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ github.repository }}_${{ matrix.arch }}:latest
-            ${{ github.repository }}_${{ matrix.arch }}:${{ github.ref_name }}
-            ${{ github.repository }}_${{ matrix.arch }}:${{ steps.version.outputs.v-version }}
-            ghcr.io/${{ github.repository }}_${{ matrix.arch }}:latest
-            ghcr.io/${{ github.repository }}_${{ matrix.arch }}:${{ github.ref_name }}
-            ghcr.io/${{ github.repository }}_${{ matrix.arch }}:${{ steps.version.outputs.v-version }}
+            ${{ github.repository }}:${{ matrix.arch }}_latest
+            ${{ github.repository }}:${{ matrix.arch }}_${{ github.ref_name }}
+            ${{ github.repository }}:${{ matrix.arch }}_${{ steps.version.outputs.v-version }}
+            ghcr.io/${{ github.repository }}:${{ matrix.arch }}_latest
+            ghcr.io/${{ github.repository }}:${{ matrix.arch }}_${{ github.ref_name }}
+            ghcr.io/${{ github.repository }}:${{ matrix.arch }}_${{ steps.version.outputs.v-version }}
           target: ${{ matrix.arch }}
           cache-from: |
             type=registry,ref=${{secrets.REHOSTING_ARC_REGISTRY}}/${{ github.repository }}:${{ matrix.arch }}_cache,mode=max
