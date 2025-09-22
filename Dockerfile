@@ -106,15 +106,6 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/arm-linux-musleabihf-cross /opt/cross/arm-linux-musleabihf' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 
-# musl-cross arm64
-FROM base AS arm64
-RUN mkdir -p /opt/cross && \
-    wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
-    ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl && \
-    echo 'export PATH="/opt/cross/aarch64-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl' >> /opt/cross/setup-cross.sh && \
-    bash /opt/cross/setup-cross.sh
-
 # musl-cross riscv32
 FROM base AS riscv32
 RUN mkdir -p /opt/cross && \
