@@ -22,6 +22,24 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/x86_64-linux-musl-cross /opt/cross/x86_64-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 
+# armel
+FROM base AS armel
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/arm-linux-musleabi-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/arm-linux-musleabi-cross /opt/cross/arm-linux-musleabi && \
+    echo 'export PATH="/opt/cross/arm-linux-musleabi/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/arm-linux-musleabi-cross /opt/cross/arm-linux-musleabi' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
+
+# arm64
+FROM base AS arm64
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl && \
+    echo 'export PATH="/opt/cross/aarch64-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
+
 # mipseb
 FROM base AS mipseb
 RUN mkdir -p /opt/cross && \
@@ -115,8 +133,8 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/riscv64-linux-musl-cross /opt/cross/riscv64-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 
-# ppc
-FROM base AS ppc
+# powerpc
+FROM base AS powerpc
 RUN mkdir -p /opt/cross && \
     wget https://musl.cc/powerpc-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
     ln -s /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl && \
@@ -124,8 +142,8 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 
-# musl-cross ppcle
-FROM base AS ppcle
+# powerpcle
+FROM base AS powerpcle
 RUN mkdir -p /opt/cross && \
     wget https://musl.cc/powerpcle-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
     ln -s /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl && \
@@ -133,8 +151,8 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 
-# musl-cross ppc64
-FROM base AS ppc64
+# powerpc64
+FROM base AS powerpc64
 RUN mkdir -p /opt/cross && \
     wget https://musl.cc/powerpc64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
     ln -s /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl && \
@@ -142,8 +160,8 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 
-# musl-cross ppc64le
-FROM base AS ppc64le
+# powerpc64le
+FROM base AS powerpc64le
 RUN mkdir -p /opt/cross && \
     wget https://musl.cc/powerpc64le-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
     ln -s /opt/cross/powerpc64le-linux-musl-cross /opt/cross/powerpc64le-linux-musl && \
@@ -175,7 +193,7 @@ COPY --from=mips64eb     /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
 COPY --from=mips64el     /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
-COPY --from=arm          /opt/cross /opt/cross
+COPY --from=armel        /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
 COPY --from=armhf        /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
@@ -185,13 +203,13 @@ COPY --from=riscv32      /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
 COPY --from=riscv64      /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
-COPY --from=ppc          /opt/cross /opt/cross
+COPY --from=powerpc      /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
-COPY --from=ppcle        /opt/cross /opt/cross
+COPY --from=powerpcle    /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
-COPY --from=ppc64        /opt/cross /opt/cross
+COPY --from=powerpc64    /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
-COPY --from=ppc64le      /opt/cross /opt/cross
+COPY --from=powerpc64le  /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh
 COPY --from=loongarch64  /opt/cross /opt/cross
 RUN bash /opt/cross/setup-cross.sh && rm -rf /opt/cross/setup-cross.sh
