@@ -170,9 +170,11 @@ jobs:
           context: .
           push: true
           tags: |
+            ${{ github.repository }}:${{ matrix.arch }}
             ${{ github.repository }}:${{ matrix.arch }}_latest
             ${{ github.repository }}:${{ matrix.arch }}_${{ github.ref_name }}
             ${{ github.repository }}:${{ matrix.arch }}_${{ steps.version.outputs.v-version }}
+            ghcr.io/${{ github.repository }}:${{ matrix.arch }}
             ghcr.io/${{ github.repository }}:${{ matrix.arch }}_latest
             ghcr.io/${{ github.repository }}:${{ matrix.arch }}_${{ github.ref_name }}
             ghcr.io/${{ github.repository }}:${{ matrix.arch }}_${{ steps.version.outputs.v-version }}
