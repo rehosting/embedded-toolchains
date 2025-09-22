@@ -56,7 +56,7 @@ jobs:
               insecure = true
               http = true
 
-      - name: Build embedded-toolchains docker image (rust)
+      - name: Build embedded-toolchains docker image
         uses: docker/build-push-action@v6
         with:
           context: .
