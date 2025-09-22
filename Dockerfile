@@ -2,39 +2,54 @@ ARG REGISTRY="docker.io"
 FROM ${REGISTRY}/ubuntu:22.04 AS base
 RUN apt-get update
 RUN apt-get -y install build-essential git wget libncurses-dev bc curl
-RUN mkdir -p /opt/cross
+RUN mkdir -p /opt/cross && echo '#!/bin/sh' > /opt/cross/setup-cross.sh && chmod +x /opt/cross/setup-cross.sh
 
 # i686
 FROM base AS i686
-ENV PATH="/opt/cross/i686-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/i686-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/i686-linux-musl-cross /opt/cross/i686-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/i686-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/i686-linux-musl-cross /opt/cross/i686-linux-musl && \
+    echo 'export PATH="/opt/cross/i686-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/i686-linux-musl-cross /opt/cross/i686-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # x86_64
 FROM base AS x86_64
-ENV PATH="/opt/cross/x86_64-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/x86_64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/x86_64-linux-musl-cross /opt/cross/x86_64-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/x86_64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/x86_64-linux-musl-cross /opt/cross/x86_64-linux-musl && \
+    echo 'export PATH="/opt/cross/x86_64-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/x86_64-linux-musl-cross /opt/cross/x86_64-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # mipseb
 FROM base AS mipseb
-ENV PATH="/opt/cross/mipseb-linux-musl/bin/:${PATH}"
-RUN wget http://panda.re/secret/mipseb-linux-musl_gcc-5.3.0.tar.gz -O - | tar -xz -C /opt/cross
+RUN mkdir -p /opt/cross && \
+    wget http://panda.re/secret/mipseb-linux-musl_gcc-5.3.0.tar.gz -O - | tar -xz -C /opt/cross && \
+    echo 'export PATH="/opt/cross/mipseb-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # mipsel
 FROM base AS mipsel
-ENV PATH="/opt/cross/mipsel-linux-musl/bin/:${PATH}"
-RUN wget http://panda.re/secret/mipsel-linux-musl_gcc-5.3.0.tar.gz -O - | tar -xz -C /opt/cross
+RUN mkdir -p /opt/cross && \
+    wget http://panda.re/secret/mipsel-linux-musl_gcc-5.3.0.tar.gz -O - | tar -xz -C /opt/cross && \
+    echo 'export PATH="/opt/cross/mipsel-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # mips64eb
 FROM base AS mips64eb
-ENV PATH="/opt/cross/mips64eb-linux-musl/bin/:${PATH}"
-RUN wget http://panda.re/secret/mips64-linux-musl-cross_gcc-6.5.0.tar.gz -O - | tar -xz -C /opt/cross &&  ln -s /opt/cross/mips64-linux-musl-cross /opt/cross/mips64eb-linux-musl && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-gcc /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-gcc && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ld /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ld && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objdump /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objdump && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objcopy /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objcopy && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ar /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ar && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-nm /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-nm && \
-    ln -s /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-strip /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-strip
+RUN mkdir -p /opt/cross && \
+    wget http://panda.re/secret/mips64-linux-musl-cross_gcc-6.5.0.tar.gz -O - | tar -xz -C /opt/cross && \
+    echo 'ln -sf /opt/cross/mips64-linux-musl-cross /opt/cross/mips64eb-linux-musl' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-gcc /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-gcc' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ld /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ld' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objdump /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objdump' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objcopy /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objcopy' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ar /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ar' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-nm /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-nm' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-strip /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-strip' >> /opt/cross/setup-cross.sh && \
+    echo 'export PATH="/opt/cross/mips64eb-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross mips64el
 # custom mips64 toolchain
@@ -48,78 +63,138 @@ RUN wget http://panda.re/secret/mips64-linux-musl-cross_gcc-6.5.0.tar.gz -O - | 
 # GCC_CONFIG += --enable-languages=c
 # It's a bit nutty to symlink all of these, but easier to keep track of what's needed for the future
 FROM base AS mips64el
-ENV PATH="/opt/cross/mips64el-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/mips64el-linux-musl-cross.tgz -O -  | tar -xz -C /opt/cross &&  ln -s /opt/cross/mips64el-linux-musl-cross /opt/cross/mips64el-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/mips64el-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/mips64el-linux-musl-cross /opt/cross/mips64el-linux-musl && \
+    echo 'export PATH="/opt/cross/mips64el-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/mips64el-linux-musl-cross /opt/cross/mips64el-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross arm
 FROM base AS arm
-ENV PATH="/opt/cross/arm-linux-musleabi/bin/:${PATH}"
-RUN wget https://musl.cc/arm-linux-musleabi-cross.tgz -O - | tar -xz -C /opt/cross &&  ln -s /opt/cross/arm-linux-musleabi-cross /opt/cross/arm-linux-musleabi
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/arm-linux-musleabi-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/arm-linux-musleabi-cross /opt/cross/arm-linux-musleabi && \
+    echo 'export PATH="/opt/cross/arm-linux-musleabi/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/arm-linux-musleabi-cross /opt/cross/arm-linux-musleabi' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross armhf
 FROM base AS armhf
-ENV PATH="/opt/cross/arm-linux-musleabihf/bin/:${PATH}"
-RUN wget https://musl.cc/arm-linux-musleabihf-cross.tgz -O - | tar -xz -C /opt/cross &&  ln -s /opt/cross/arm-linux-musleabihf-cross /opt/cross/arm-linux-musleabihf
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/arm-linux-musleabihf-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/arm-linux-musleabihf-cross /opt/cross/arm-linux-musleabihf && \
+    echo 'export PATH="/opt/cross/arm-linux-musleabihf/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/arm-linux-musleabihf-cross /opt/cross/arm-linux-musleabihf' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross arm64
 FROM base AS arm64
-ENV PATH="/opt/cross/aarch64-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/aarch64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl && \
+    echo 'export PATH="/opt/cross/aarch64-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/aarch64-linux-musl-cross /opt/cross/aarch64-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross riscv32
 FROM base AS riscv32
-ENV PATH="/opt/cross/riscv32-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/riscv32-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/riscv32-linux-musl-cross /opt/cross/riscv32-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/riscv32-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/riscv32-linux-musl-cross /opt/cross/riscv32-linux-musl && \
+    echo 'export PATH="/opt/cross/riscv32-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/riscv32-linux-musl-cross /opt/cross/riscv32-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross riscv64
 FROM base AS riscv64
-ENV PATH="/opt/cross/riscv64-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/riscv64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/riscv64-linux-musl-cross /opt/cross/riscv64-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/riscv64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/riscv64-linux-musl-cross /opt/cross/riscv64-linux-musl && \
+    echo 'export PATH="/opt/cross/riscv64-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/riscv64-linux-musl-cross /opt/cross/riscv64-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # ppc
 FROM base AS ppc
-ENV PATH="/opt/cross/powerpc-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/powerpc-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/powerpc-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl && \
+    echo 'export PATH="/opt/cross/powerpc-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross ppcle
 FROM base AS ppcle
-ENV PATH="/opt/cross/powerpcle-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/powerpcle-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/powerpcle-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl && \
+    echo 'export PATH="/opt/cross/powerpcle-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross ppc64
 FROM base AS ppc64
-ENV PATH="/opt/cross/powerpc64-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/powerpc64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/powerpc64-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl && \
+    echo 'export PATH="/opt/cross/powerpc64-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # musl-cross ppc64le
 FROM base AS ppc64le
-ENV PATH="/opt/cross/powerpc64le-linux-musl/bin/:${PATH}"
-RUN wget https://musl.cc/powerpc64le-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && ln -s /opt/cross/powerpc64le-linux-musl-cross /opt/cross/powerpc64le-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/powerpc64le-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/powerpc64le-linux-musl-cross /opt/cross/powerpc64le-linux-musl && \
+    echo 'export PATH="/opt/cross/powerpc64le-linux-musl/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/powerpc64le-linux-musl-cross /opt/cross/powerpc64le-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # gcc loongarch64
 FROM base AS loongarch64
-ENV PATH="/opt/cross/loongarch64-linux-gcc-cross/bin/:${PATH}"
-RUN wget https://github.com/loongson/build-tools/releases/download/2025.02.21/x86_64-cross-tools-loongarch64-binutils_2.44-gcc_14.2.0-glibc_2.41.tar.xz -O - | tar -xJ -C /tmp && mv /tmp/cross-tools/ /opt/cross/loongarch64-linux-gcc-cross && ln -s /opt/cross/loongarch-linux-gcc-cross /opt/cross/loongarch-linux-musl
+RUN mkdir -p /opt/cross && \
+    wget https://github.com/loongson/build-tools/releases/download/2025.02.21/x86_64-cross-tools-loongarch64-binutils_2.44-gcc_14.2.0-glibc_2.41.tar.xz -O - | tar -xJ -C /tmp && \
+    mv /tmp/cross-tools/ /opt/cross/loongarch64-linux-gcc-cross && \
+    ln -s /opt/cross/loongarch-linux-gcc-cross /opt/cross/loongarch-linux-musl && \
+    echo 'export PATH="/opt/cross/loongarch64-linux-gcc-cross/bin:$PATH"' >> /opt/cross/setup-cross.sh && \
+    echo 'ln -sf /opt/cross/loongarch64-linux-gcc-cross /opt/cross/loongarch-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
 
 # final stage: gather all toolchains
 FROM base AS final
-COPY --from=i686         /opt/cross/i686-linux-musl*         /opt/cross/
-COPY --from=x86_64       /opt/cross/x86_64-linux-musl*       /opt/cross/
-COPY --from=mipseb       /opt/cross/mipseb-linux-musl*       /opt/cross/
-COPY --from=mipsel       /opt/cross/mipsel-linux-musl*       /opt/cross/
-COPY --from=mips64eb     /opt/cross/mips64eb-linux-musl*     /opt/cross/
-COPY --from=mips64el     /opt/cross/mips64el-linux-musl*     /opt/cross/
-COPY --from=arm          /opt/cross/arm-linux-musleabi*      /opt/cross/
-COPY --from=armhf        /opt/cross/arm-linux-musleabihf*    /opt/cross/
-COPY --from=arm64        /opt/cross/aarch64-linux-musl*      /opt/cross/
-COPY --from=riscv32      /opt/cross/riscv32-linux-musl*      /opt/cross/
-COPY --from=riscv64      /opt/cross/riscv64-linux-musl*      /opt/cross/
-COPY --from=ppc          /opt/cross/powerpc-linux-musl*      /opt/cross/
-COPY --from=ppcle        /opt/cross/powerpcle-linux-musl*    /opt/cross/
-COPY --from=ppc64        /opt/cross/powerpc64-linux-musl*    /opt/cross/
-COPY --from=ppc64le      /opt/cross/powerpc64le-linux-musl*  /opt/cross/
-COPY --from=loongarch64  /opt/cross/loongarch64-linux-gcc-cross /opt/cross/
-COPY --from=loongarch64  /opt/cross/loongarch-linux-musl     /opt/cross/
+COPY --from=i686         /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=x86_64       /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=mipseb       /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=mipsel       /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=mips64eb     /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=mips64el     /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=arm          /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=armhf        /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=arm64        /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=riscv32      /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=riscv64      /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=ppc          /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=ppcle        /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=ppc64        /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=ppc64le      /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh
+COPY --from=loongarch64  /opt/cross /opt/cross
+RUN bash /opt/cross/setup-cross.sh && rm -rf /opt/cross/setup-cross.sh
 
 # rust stage (unchanged, can be added as needed)
 FROM final AS rust
@@ -137,6 +212,14 @@ RUN  rustup target add x86_64-unknown-linux-musl && \
      rustup target add arm-unknown-linux-musleabi && \
      rustup target add arm-unknown-linux-musleabihf && \
      rustup target add aarch64-unknown-linux-musl
+    
+# Now we can use a cargo/.config with something like the following (as seen in the vpn package)
+#[target.mips-unknown-linux-musl]
+#linker = "/opt/cross/mipseb-linux-musl/bin/mipseb-linux-musl-gcc"
+#[target.mipsel-unknown-linux-musl]
+#linker = "/opt/cross/mipsel-linux-musl/bin/mipsel-linux-musl-gcc"
+#[target.arm-unknown-linux-musleabi]
+#linker = "/opt/cross/arm-linux-musleabi/bin/arm-linux-musleabi-gcc"
     
 # Now we can use a cargo/.config with something like the following (as seen in the vpn package)
 #[target.mips-unknown-linux-musl]
