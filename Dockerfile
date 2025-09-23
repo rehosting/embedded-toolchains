@@ -158,7 +158,7 @@ RUN mkdir -p /opt/cross && \
 ENV PATH="/opt/cross/powerpc64-linux-musl/bin:${PATH}"
 
 # powerpc64le
-FROM base AS powerpc64le
+FROM powerpc64 AS powerpc64le
 RUN mkdir -p /opt/cross && \
     wget https://musl.cc/powerpc64le-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
     ln -s /opt/cross/powerpc64le-linux-musl-cross /opt/cross/powerpc64le-linux-musl && \
