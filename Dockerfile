@@ -179,7 +179,7 @@ ENV PATH="/opt/cross/loongarch64-linux-gcc-cross/bin:${PATH}"
 # final stage: gather all toolchains
 FROM base AS final
 RUN apt-get update && \
-    apt-get install gcc-riscv64-linux-gnu && \
+    apt-get install -y gcc-riscv64-linux-gnu && \
     rm -rf /var/lib/apt/lists/*
 COPY --from=i686         /opt/cross /opt/cross
 ENV PATH="/opt/cross/i686-linux-musl/bin:${PATH}"
