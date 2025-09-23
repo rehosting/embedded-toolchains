@@ -130,24 +130,6 @@ RUN mkdir -p /opt/cross && \
     bash /opt/cross/setup-cross.sh
 ENV PATH="/opt/cross/riscv64-linux-musl/bin:${PATH}"
 
-# powerpc
-FROM base AS powerpc
-RUN mkdir -p /opt/cross && \
-    wget https://musl.cc/powerpc-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
-    ln -s /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl && \
-    echo 'ln -sf /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl' >> /opt/cross/setup-cross.sh && \
-    bash /opt/cross/setup-cross.sh
-ENV PATH="/opt/cross/powerpc-linux-musl/bin:${PATH}"
-
-# powerpcle
-FROM base AS powerpcle
-RUN mkdir -p /opt/cross && \
-    wget https://musl.cc/powerpcle-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
-    ln -s /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl && \
-    echo 'ln -sf /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl' >> /opt/cross/setup-cross.sh && \
-    bash /opt/cross/setup-cross.sh
-ENV PATH="/opt/cross/powerpcle-linux-musl/bin:${PATH}"
-
 # powerpc64
 FROM base AS powerpc64
 RUN mkdir -p /opt/cross && \
@@ -165,6 +147,24 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/powerpc64le-linux-musl-cross /opt/cross/powerpc64le-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 ENV PATH="/opt/cross/powerpc64le-linux-musl/bin:${PATH}"
+
+# powerpc
+FROM powerpc64 AS powerpc
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/powerpc-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl && \
+    echo 'ln -sf /opt/cross/powerpc-linux-musl-cross /opt/cross/powerpc-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
+ENV PATH="/opt/cross/powerpc-linux-musl/bin:${PATH}"
+
+# powerpcle
+FROM powerpc64 AS powerpcle
+RUN mkdir -p /opt/cross && \
+    wget https://musl.cc/powerpcle-linux-musl-cross.tgz -O - | tar -xz -C /opt/cross && \
+    ln -s /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl && \
+    echo 'ln -sf /opt/cross/powerpcle-linux-musl-cross /opt/cross/powerpcle-linux-musl' >> /opt/cross/setup-cross.sh && \
+    bash /opt/cross/setup-cross.sh
+ENV PATH="/opt/cross/powerpcle-linux-musl/bin:${PATH}"
 
 # loongarch64
 FROM base AS loongarch64
