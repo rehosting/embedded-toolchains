@@ -62,13 +62,8 @@ FROM base AS mips64eb
 RUN mkdir -p /opt/cross && \
     wget http://panda.re/secret/mips64-linux-musl-cross_gcc-6.5.0.tar.gz -O - | tar -xz -C /opt/cross && \
     echo 'ln -sf /opt/cross/mips64-linux-musl-cross /opt/cross/mips64eb-linux-musl' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-gcc /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-gcc' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ld /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ld' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objdump /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objdump' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-objcopy /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-objcopy' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-ar /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-ar' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-nm /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-nm' >> /opt/cross/setup-cross.sh && \
-    echo 'ln -sf /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-strip /opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-strip' >> /opt/cross/setup-cross.sh && \
+    # Dynamically create symlinks for every tool: mips64-linux-musl-* -> mips64eb-linux-musl-*
+    echo 'for f in /opt/cross/mips64eb-linux-musl/bin/mips64-linux-musl-*; do [ -e "$f" ] || continue; b=$(basename "$f"); suf=${b#mips64-linux-musl-}; ln -sf "$f" "/opt/cross/mips64eb-linux-musl/bin/mips64eb-linux-musl-$suf"; done' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 ENV PATH="/opt/cross/mips64eb-linux-musl/bin:${PATH}"
 
@@ -257,6 +252,11 @@ RUN  rustup target add x86_64-unknown-linux-musl && \
     
 # Now we can use a cargo/.config with something like the following (as seen in the vpn package)
 #[target.mips-unknown-linux-musl]
+#linker = "/opt/cross/mipseb-linux-musl/bin/mipseb-linux-musl-gcc"
+#[target.mipsel-unknown-linux-musl]
+#linker = "/opt/cross/mipsel-linux-musl/bin/mipsel-linux-musl-gcc"
+#[target.arm-unknown-linux-musleabi]
+#linker = "/opt/cross/arm-linux-musleabi/bin/arm-linux-musleabi-gcc"
 #linker = "/opt/cross/mipseb-linux-musl/bin/mipseb-linux-musl-gcc"
 #[target.mipsel-unknown-linux-musl]
 #linker = "/opt/cross/mipsel-linux-musl/bin/mipsel-linux-musl-gcc"
