@@ -3,7 +3,7 @@ FROM ${REGISTRY}/ubuntu:22.04 AS base
 RUN apt-get update && apt-get -y install \
     build-essential git wget libncurses-dev bc curl \
     gdb xonsh flex bison libssl-dev libelf-dev pigz \
-    bsdmainutils zstd cpio && \
+    bsdmainutils zstd cpio ccache && \
     rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /opt/cross && echo '#!/bin/sh' > /opt/cross/setup-cross.sh && chmod +x /opt/cross/setup-cross.sh
 
