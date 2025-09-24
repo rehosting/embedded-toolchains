@@ -1,4 +1,9 @@
 ARG REGISTRY="docker.io"
+FROM ${REGISTRY}/golang:latest AS go
+RUN git clone --depth 1 https://github.com/volatilityfoundation/dwarf2json.git \
+    && cd dwarf2json \
+    && go build
+
 FROM ${REGISTRY}/ubuntu:22.04 AS base
 RUN apt-get update && apt-get -y install \
     build-essential git wget libncurses-dev bc curl \
@@ -9,6 +14,7 @@ RUN apt-get update && apt-get -y install \
 RUN wget https://github.com/volatilityfoundation/dwarf2json/releases/download/v0.9.0/dwarf2json-linux-amd64 -O /bin/dwarf2json && \
 	chmod +x /bin/dwarf2json
 RUN mkdir -p /opt/cross && echo '#!/bin/sh' > /opt/cross/setup-cross.sh && chmod +x /opt/cross/setup-cross.sh
+COPY --from=go /go/dwarf2json/dwarf2json /bin/dwarf2json
 
 # i686
 FROM base AS i686
