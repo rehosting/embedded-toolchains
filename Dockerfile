@@ -77,7 +77,7 @@ RUN mkdir -p /opt/cross && \
 ENV PATH="/opt/cross/x86_64-linux-musl/bin:${PATH}"
 
 COPY --from=x86_64_legacy_builder /opt/cross/x86_64-legacy /opt/cross/x86_64-legacy
-ENV PATH="/opt/cross/x86_64-legacy/bin:${PATH}"
+ENV PATH="${PATH}:/opt/cross/x86_64-legacy/bin"
 
 # armel
 FROM base AS armel
@@ -237,8 +237,8 @@ COPY --from=x86_64       /opt/cross /opt/cross
 ENV PATH="/opt/cross/x86_64-linux-musl/bin:${PATH}"
 RUN bash /opt/cross/setup-cross.sh
 # legacy toolchain
-COPY --from=x86_64 /opt/cross/x86_64-legacy /opt/cross/x86_64-legacy
-ENV PATH="/opt/cross/x86_64-legacy/bin:${PATH}"
+COPY --from=x86_64_legacy_builder /opt/cross/x86_64-legacy /opt/cross/x86_64-legacy
+ENV PATH="${PATH}:/opt/cross/x86_64-legacy/bin"
 COPY --from=mipseb       /opt/cross /opt/cross
 ENV PATH="/opt/cross/mipseb-linux-musl/bin:${PATH}"
 RUN bash /opt/cross/setup-cross.sh
