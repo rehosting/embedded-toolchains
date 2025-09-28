@@ -25,6 +25,48 @@ RUN mkdir -p /opt/cross && \
     bash /opt/cross/setup-cross.sh
 ENV PATH="/opt/cross/i686-linux-musl/bin:${PATH}"
 
+FROM base AS x86_64_legacy_builder
+
+RUN apt-get update && apt-get -y install \
+    libgmp-dev libmpfr-dev libmpc-dev xz-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /tmp/build
+
+# --- build binutils 2.30 ---
+RUN cd /tmp/build && \
+    wget https://mirrors.ibiblio.org/pub/mirrors/gnu/binutils/binutils-2.30.tar.xz && \
+    tar -xJf binutils-2.30.tar.xz && \
+    mkdir binutils-2.30/build && cd binutils-2.30/build && \
+    ../configure --target=x86_64-linux-musl \
+                 --prefix=/opt/cross/x86_64-legacy \
+                 --disable-nls --disable-werror && \
+    make -j"$(nproc)" && make install
+
+# --- build musl headers + libc ---
+RUN cd /tmp/build && \
+    wget https://musl.libc.org/releases/musl-1.1.24.tar.gz && \
+    tar xf musl-1.1.24.tar.gz && \
+    cd musl-1.1.24 && \
+    ./configure --prefix=/opt/cross/x86_64-legacy/x86_64-linux-musl && \
+    make -j"$(nproc)" && make install
+
+# --- build gcc 6.5.0 ---
+RUN cd /tmp/build && \
+    wget https://mirrors.ibiblio.org/pub/mirrors/gnu/gcc/gcc-6.5.0/gcc-6.5.0.tar.xz && \
+    tar -xJf gcc-6.5.0.tar.xz && \
+    mkdir gcc-6.5.0/build && cd gcc-6.5.0/build && \
+    ../configure --target=x86_64-linux-musl \
+                 --prefix=/opt/cross/x86_64-legacy \
+                 --with-sysroot=/opt/cross/x86_64-legacy/x86_64-linux-musl \
+                 --with-native-system-header-dir=/include \
+                 --disable-nls --enable-languages=c && \
+    make all-gcc -j"$(nproc)" && make install-gcc && \
+    rm -rf /tmp/build
+
+ENV PATH="/opt/cross/x86_64-legacy/bin:${PATH}"
+
+
 # x86_64
 FROM base AS x86_64
 RUN mkdir -p /opt/cross && \
@@ -33,6 +75,9 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/x86_64-linux-musl-cross /opt/cross/x86_64-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 ENV PATH="/opt/cross/x86_64-linux-musl/bin:${PATH}"
+
+COPY --from=x86_64_legacy_builder /opt/cross/x86_64-legacy /opt/cross/x86_64-legacy
+ENV PATH="/opt/cross/x86_64-legacy/bin:${PATH}"
 
 # armel
 FROM base AS armel
@@ -191,6 +236,9 @@ RUN bash /opt/cross/setup-cross.sh
 COPY --from=x86_64       /opt/cross /opt/cross
 ENV PATH="/opt/cross/x86_64-linux-musl/bin:${PATH}"
 RUN bash /opt/cross/setup-cross.sh
+# legacy toolchain
+COPY --from=x86_64 /opt/cross/x86_64-legacy /opt/cross/x86_64-legacy
+ENV PATH="/opt/cross/x86_64-legacy/bin:${PATH}"
 COPY --from=mipseb       /opt/cross /opt/cross
 ENV PATH="/opt/cross/mipseb-linux-musl/bin:${PATH}"
 RUN bash /opt/cross/setup-cross.sh
