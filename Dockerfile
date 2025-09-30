@@ -5,6 +5,8 @@ RUN git clone --depth 1 https://github.com/volatilityfoundation/dwarf2json.git \
     && go build
 
 FROM ${REGISTRY}/ubuntu:22.04 AS base
+RUN sed -i 's/^# deb \(.*\) universe$/deb \1 universe/' /etc/apt/sources.list  && \
+    sed -i 's/^# deb \(.*\) multiverse$/deb \1 multiverse/' /etc/apt/sources.list
 RUN apt-get update && apt-get -y install \
     build-essential git wget libncurses-dev bc curl \
     gdb xonsh flex bison libssl-dev libelf-dev pigz \
