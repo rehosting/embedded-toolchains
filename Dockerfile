@@ -187,6 +187,8 @@ RUN mkdir -p /opt/cross && \
     echo 'ln -sf /opt/cross/powerpc64-linux-musl-cross /opt/cross/powerpc64-linux-musl' >> /opt/cross/setup-cross.sh && \
     bash /opt/cross/setup-cross.sh
 ENV PATH="/opt/cross/powerpc64-linux-musl/bin:${PATH}"
+# Also install the debian powerpc64 toolchain for legacy builds
+RUN apt-get install -y gcc-powerpc64-linux-gnu g++-powerpc64-linux-gnu
 
 # powerpc64le
 FROM powerpc64 AS powerpc64le
@@ -281,6 +283,8 @@ RUN bash /opt/cross/setup-cross.sh
 COPY --from=loongarch64  /opt/cross /opt/cross
 ENV PATH="/opt/cross/loongarch64-linux-gcc-cross/bin:${PATH}"
 RUN bash /opt/cross/setup-cross.sh && rm -rf /opt/cross/setup-cross.sh
+# Also install the debian powerpc64 toolchain for legacy builds
+RUN apt-get install -y gcc-powerpc64-linux-gnu g++-powerpc64-linux-gnu
 
 # rust stage (unchanged, can be added as needed)
 FROM final AS rust
