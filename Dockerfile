@@ -5,8 +5,6 @@ RUN git clone --depth 1 https://github.com/volatilityfoundation/dwarf2json.git \
     && go build
 
 FROM ${REGISTRY}/ubuntu:22.04 AS base
-RUN sed -i 's/^# deb \(.*\) universe$/deb \1 universe/' /etc/apt/sources.list  && \
-    sed -i 's/^# deb \(.*\) multiverse$/deb \1 multiverse/' /etc/apt/sources.list
 RUN apt-get update && apt-get -y install \
     build-essential git wget libncurses-dev bc curl \
     gdb xonsh flex bison libssl-dev libelf-dev pigz \
@@ -190,7 +188,10 @@ RUN mkdir -p /opt/cross && \
     bash /opt/cross/setup-cross.sh
 ENV PATH="/opt/cross/powerpc64-linux-musl/bin:${PATH}"
 # Also install the debian powerpc64 toolchain for legacy builds
-RUN apt-get install -y gcc-powerpc64-linux-gnu
+RUN sed -i 's/^# deb \(.*\) universe$/deb \1 universe/' /etc/apt/sources.list  && \
+    sed -i 's/^# deb \(.*\) multiverse$/deb \1 multiverse/' /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install -y gcc-powerpc64-linux-gnu g++-powerpc64-linux-gnu
 
 # powerpc64le
 FROM powerpc64 AS powerpc64le
@@ -286,7 +287,10 @@ COPY --from=loongarch64  /opt/cross /opt/cross
 ENV PATH="/opt/cross/loongarch64-linux-gcc-cross/bin:${PATH}"
 RUN bash /opt/cross/setup-cross.sh && rm -rf /opt/cross/setup-cross.sh
 # Also install the debian powerpc64 toolchain for legacy builds
-RUN apt-get install -y gcc-powerpc64-linux-gnu
+RUN sed -i 's/^# deb \(.*\) universe$/deb \1 universe/' /etc/apt/sources.list  && \
+    sed -i 's/^# deb \(.*\) multiverse$/deb \1 multiverse/' /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install -y gcc-powerpc64-linux-gnu g++-powerpc64-linux-gnu
 
 # rust stage (unchanged, can be added as needed)
 FROM final AS rust
