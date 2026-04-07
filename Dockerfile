@@ -1,6 +1,6 @@
 ARG REGISTRY="docker.io"
 FROM ${REGISTRY}/golang:latest AS go
-RUN git clone --depth 1 https://github.com/volatilityfoundation/dwarf2json.git \
+RUN git clone --depth 1 https://github.com/rehosting/dwarf2json.git \
     && cd dwarf2json \
     && go build
 
@@ -10,9 +10,6 @@ RUN apt-get update && apt-get -y install \
     gdb xonsh flex bison libssl-dev libelf-dev pigz \
     bsdmainutils zstd cpio ccache && \
     rm -rf /var/lib/apt/lists/*
-# dwarf2json
-RUN wget https://github.com/rehosting/dwarf2json/releases/download/v0.9.6/dwarf2json-darwin-amd64 -O /bin/dwarf2json && \
-	chmod +x /bin/dwarf2json
 RUN mkdir -p /opt/cross && echo '#!/bin/sh' > /opt/cross/setup-cross.sh && chmod +x /opt/cross/setup-cross.sh
 COPY --from=go /go/dwarf2json/dwarf2json /bin/dwarf2json
 
