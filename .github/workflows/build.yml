@@ -32,8 +32,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          # Use buildx's default (pinned, stable) buildkit image rather than the
+          # floating moby/buildkit:master. A recent master regressed on the
+          # rehosting-arc runners with: runc ... can't mask dir "/proc/acpi"
+          # ... invalid argument, failing every RUN step.
           driver-opts: |
-            image=moby/buildkit:master
             network=host
           buildkitd-config-inline: |
             [registry."${{ secrets.REHOSTING_ARC_REGISTRY }}"]
